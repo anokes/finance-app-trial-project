@@ -1,151 +1,127 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <title>{{ config('app.name', 'Finance App') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+
+    <!-- adding alpine.js for the dropdown functionality -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.0/dist/alpine.min.js" defer></script>
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans antialiased">
-<div id="app">
-    <div class="bg-white">
-        <div class="container mx-auto px-8 py-4 flex flex-row">
-            <a href="#" class="logo text-xl font-semibold flex-initial flex flex-row items-center tracking-wider">
-                <img src="/images/logo.svg" class="mr-4"/>
-                Your<span class="text-blue-600">Balance</span>
-            </a>
-            <div class="flex content-center flex-row flex-grow justify-end h-full">
-                <a href="#" class="flex">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="block mx-auto my-auto" width="16" height="16" viewBox="0 0 16 16">
-                        <path class="notificationIcon" fill="#A0A5BA" d="M10 14L6 14C6 15.1 6.9 16 8 16 9.1 16 10 15.1 10 14zM15 11L14.5 11C13.8 10.3 13 9.3 13 8L13 5C13 2.2 10.8 0 8 0 5.2 0 3 2.2 3 5L3 8C3 9.3 2.2 10.3 1.5 11L1 11C.4 11 0 11.4 0 12 0 12.6.4 13 1 13L15 13C15.6 13 16 12.6 16 12 16 11.4 15.6 11 15 11z"/>
-                    </svg>
-                </a>
-                <a href="#" class="flex items-center font-bold text-sm text-gray-500">
-                    <img src="/images/avatar.png" class="w-8 mx-4"/>
-                    Molly Green
-                </a>
+
+<body>
+    <div>
+        <nav class="bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 no-underline">
+                            <a href="/">
+                                <img class="h-8 w-8 float-left" src="{{ asset('images/logo.svg') }}" alt="Finance App">
+                                <div class="ml-10 text-xl font-bold ">Your<span class="text-blue-600">Balance</span></div>
+                            </a>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                            </div>
+                        </div>
+                    </div>
+                    @guest
+                    @if (Route::has('login'))
+                    <a class="nav-link text-white float-right" href="{{ route('login') }}">{{ __('Login') }}</a>
+                    @endif
+                    @if (Route::has('register'))
+                    <a class="nav-link text-white float-right" href="{{ route('register') }}">{{ __('Register') }}</a>
+                    @endif
+                    @else
+
+
+                    <div class="hidden md:block">
+                        <div class="ml-4 flex items-center md:ml-6">
+                            <button class="bg-whitep-1 rounded-full text-gray-400 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                <span class="sr-only">View notifications</span>
+                                <!-- Heroicon name: outline/bell -->
+                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            </button>
+
+                            <!-- Profile dropdown -->
+                            <div class="ml-3 relative">
+                                <div>
+                                    <button type="button" class="max-w-xs bg-white rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                        <span class="sr-only">Open user menu</span>
+                                        <img class="h-8 w-8 rounded-full" src="https://i.stack.imgur.com/joo5P.jpg?s=48&g=1" alt="">
+                                        <div class="ml-2 font-bold text-gray-700">{{ Auth::user()->name }}</div>
+                                        <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">Sign out</a>
+                                    </button>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+
+            <!-- Mobile menu, show/hide based on menu state. -->
+            <div class="md:hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+
+                </div>
+                <div class="pt-4 pb-3 border-t border-gray-700">
+                    <div class="flex items-center px-5">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="https://i.stack.imgur.com/joo5P.jpg?s=48&g=1" alt="">
+
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-base font-medium leading-none text-gray-700">{{ Auth::user()->name }}</div>
+                            <div class="text-sm font-medium leading-none text-gray-700">{{ Auth::user()->email }}</div>
+                        </div>
+                        <button class="ml-auto bg-gray-white flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                            <span class="sr-only">View notifications</span>
+                            <!-- Heroicon name: outline/bell -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-3 px-2 space-y-1">
+
+                        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">Sign out</a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endguest
+        </nav>
+
+
+        <main id="app">
+            @yield('content')
+        </main>
     </div>
-
-    <div class="mb-12 py-6 bg-gray-800">
-        <div class="container mx-auto flex px-8">
-            <div class="my-auto text-white flex flex-grow items-center">
-                <h1 class="md:block hidden mr-4 text-2xl font-bold">
-                    Your Balance
-                </h1>
-
-                <div class="flex flex-row">
-                    <a href="#" class="flex items-center mr-4 px-3 py-2 bg-blue-700 rounded-md text-white text-xs font-bold uppercase tracking-tight">
-                        Add Entry
-                    </a>
-                    <a href="#" class="flex items-center mr-4 px-3 py-2 bg-blue-700 rounded-md text-white text-xs font-bold uppercase tracking-tight">
-                        Import CSV
-                    </a>
-                </div>
-            </div>
-            <div class="my-auto text-right font-bold text-xs uppercase tracking-tight leading-7 text-gray-400">
-                Total Balance
-                <span class="block text-3xl font-normal text-green-500">
-                    $1,725.<span class="text-xl">00</span>
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <div class="container mx-auto px-8">
-        <div class="mb-8">
-            <div class="flex items-center mb-4">
-                <span class="flex-grow text-gray-500 font-bold text-sm uppercase tracking-tight">Today</span>
-                <span class="text-lg text-gray-500 font-bold">- $50.<span class="text-sm">00</span></span>
-            </div>
-
-            <div>
-                <div class="flex items-center mb-4 px-4 py-2 shadow-md bg-white rounded-md">
-                    <div class="flex-grow">
-                        <div class="font-bold">
-                            Groceries
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            20 May, 2020 at 10:55 PM
-                        </div>
-                    </div>
-                    <div class="text-lg font-bold">
-                        - $60.<span class="text-sm">00</span>
-                    </div>
-                </div>
-                <div class="flex items-center mb-4 px-4 py-2 shadow-md bg-white rounded-md">
-                    <div class="flex-grow">
-                        <div class="font-bold">
-                            Lottery Win
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            20 May, 2020 at 09:05 AM
-                        </div>
-                    </div>
-                    <div class="text-lg font-bold text-green-500">
-                        + $10.<span class="text-sm">00</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-8">
-            <div class="flex items-center mb-4">
-                <span class="flex-grow text-gray-500 font-bold text-sm uppercase tracking-tight">Yesterday</span>
-                <span class="text-lg text-gray-500 font-bold">- $500.<span class="text-sm">00</span></span>
-            </div>
-
-            <div>
-                <div class="flex items-center mb-4 px-4 py-2 shadow-md bg-white rounded-md">
-                    <div class="flex-grow">
-                        <div class="font-bold">
-                            Car Insurance
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            19 May, 2020 at 08:00 AM
-                        </div>
-                    </div>
-                    <div class="text-lg font-bold">
-                        - $500.<span class="text-sm">00</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-8">
-            <div class="flex items-center mb-4">
-                <span class="flex-grow text-gray-500 font-bold text-sm uppercase tracking-tight">Mon, 11 May</span>
-                <span class="text-lg text-green-500 font-bold">+ $3,000.<span class="text-sm">00</span></span>
-            </div>
-
-            <div>
-                <div class="flex items-center mb-4 px-4 py-2 shadow-md bg-white rounded-md">
-                    <div class="flex-grow">
-                        <div class="font-bold">
-                            Opening Balance
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            11 May, 2020 at 10:00 AM
-                        </div>
-                    </div>
-                    <div class="text-lg text-green-500 font-bold">
-                        + $3,000.<span class="text-sm">00</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
+
 </html>
