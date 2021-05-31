@@ -103,6 +103,13 @@
                             {{ errors.amount[0] }}
                           </div>
                         </div>
+                        <input type="hidden" name="user_id" :value="balanceItemForm.user_id">
+                        <div
+                            v-if="errors && errors.user_id"
+                            class="text-danger"
+                          >
+                            {{ errors.user_id[0] }}
+                          </div>
                       </div>
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
@@ -153,6 +160,7 @@ export default {
         entry_date: this.balanceItem.entry_date,
         amount: this.balanceItem.amount,
         id: this.balanceItem.id,
+        user_id: this.balanceItem.user_id
       },
       activeHover: false,
     };
@@ -206,5 +214,6 @@ export default {
       }
     },
   },
+  
 };
 </script>

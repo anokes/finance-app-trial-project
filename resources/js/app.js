@@ -22,6 +22,7 @@ window.Vue = require('vue').default;
 
 Vue.component('main-page', require('./components/MainPage.vue').default);
 Vue.component('entry-form', require('./components/AddEntryForm.vue').default);
+Vue.component('import-entries-form', require('./components/ImportEntriesForm.vue').default);
 Vue.component('balance-item', require('./components/BalanceItem.vue').default);
 Vue.component('pagination', require('laravel-vue-pagination'));
 

@@ -6,8 +6,9 @@
           Your Balance
         </div>
         <button
-          class="mt-10 mx-2 bg-blue-700 hover:bg-blue-500 h-10 text-white font-bold py-2 px-4 rounded float-left"
+          :class="(isDisabled == true && !isJobCompleted) ? 'mt-10 mx-2 bg-blue-300 hover:bg-blue-300 h-10 text-white font-bold py-2 px-4 rounded float-left' : 'mt-10 mx-2 bg-blue-700 hover:bg-blue-500 h-10 text-white font-bold py-2 px-4 rounded float-left'"
           v-on:click="toggleShowModal()"
+          :disabled="isDisabled == true && !isJobCompleted"
         >
           <svg
             class="float-left mt-1"
@@ -24,7 +25,9 @@
           &nbsp;Add Entry
         </button>
         <button
-          class="mt-10 mx-2 bg-blue-700 hover:bg-blue-500 h-10 text-white font-bold py-2 px-4 rounded"
+          :class="(isDisabled == true && !isJobCompleted) ? 'mt-10 mx-2 bg-blue-300 hover:bg-blue-300 h-10 text-white font-bold py-2 px-4 rounded float-left' : 'mt-10 mx-2 bg-blue-700 hover:bg-blue-500 h-10 text-white font-bold py-2 px-4 rounded float-left'"
+          v-on:click="toggleShowImportModal()"
+          :disabled="isDisabled == true && !isJobCompleted"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -78,6 +81,44 @@
       </div>
     </div>
 
+    <div v-if="importInProgress && !isJobCompleted" class="bg-orange-400 container rounded">
+      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap">
+          <div class="w-0 flex-1 flex items-center">
+            <p class="ml-3 font-medium text-white truncate text-center">
+              <span
+                class="md:inline text-lg font-bold text-center items-center"
+              >
+                <svg
+                  class="animate-spin h-4 w-4 rounded-full bg-transparent border-2 border-transparent border-opacity-50 float-left mr-2 mt-1"
+                  style="border-right-color: white; border-top-color: white"
+                  viewBox="0 0 24 24"
+                ></svg>
+                We're importing {{ this.importLineCount }} balance entries. Sit
+                tight.
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="isJobCompleted" class="bg-green-600 container rounded">
+      <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between flex-wrap">
+          <div class="w-0 flex-1 flex items-center">
+            <p class="ml-3 font-medium text-white truncate text-center">
+              <span
+                class="md:inline text-lg font-bold text-center items-center"
+              >
+                Import complete!
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div
       class="row justify-content-center min-h-20"
       v-for="dailyItem in balanceData.balanceDailyTotal.data"
@@ -121,6 +162,10 @@
       :show="showModal"
       @toggle="toggleShowModal"
     ></add-entry-form>
+    <import-entries-form
+      :show="showImportModal"
+      @toggle="toggleShowImportModal"
+    ></import-entries-form>
   </div>
 </template>
 
@@ -131,12 +176,16 @@ export default {
   data() {
     return {
       showModal: false,
+      showImportModal: false,
       balanceData: {
         balanceItems: [],
         balanceDailyTotal: [],
         totalAmount: 0,
       },
       paginationData: null,
+      importInProgress: false,
+      importLineCount: 0,
+      isJobCompleted: null,
     };
   },
   methods: {
@@ -144,6 +193,10 @@ export default {
     toggleShowModal() {
       this.showModal = !this.showModal;
       this.getBalanceEntries();
+    },
+    //toggle for the import modal
+    toggleShowImportModal() {
+      this.showImportModal = !this.showImportModal;
     },
     getResults(page) {
       if (typeof page === "undefined") {
@@ -216,12 +269,49 @@ export default {
         return date;
       }
     },
-  },
+    importCompletedReset() {
 
+      //set completed flag to true
+      this.isJobCompleted = true;
+      //load the new entries to the front end
+      this.getBalanceEntries();
+
+    }
+  },
+  computed: {
+    isDisabled: function () {
+      return this.importInProgress;
+    },
+  },
   mounted() {
     //this.getBalanceEntries();
     this.getResults();
     console.log("Component mounted.");
+  },
+  created() {
+
+    //get the scope
+    let vm = this;
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    //create pusher object
+    var pusher = new Pusher("59c2a9ac6f9b15e228e9", {
+      cluster: "us2",
+    });
+
+    
+    //subscribe to the channel and bind to listen for the events
+    var channel = pusher.subscribe("completed-csv-channel");
+    channel.bind("csv-completed-event", function (data) {
+      
+      //if there is a response call the reset function to reset the ui
+      if ( data ) {
+        vm.importCompletedReset();
+      } 
+    });
+
   },
 };
 </script>

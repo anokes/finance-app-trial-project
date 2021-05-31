@@ -28,8 +28,11 @@ Auth::routes();
 
 Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
 
-//routes for CRUD functionality
+//routes for CRUD and import functionality
 Route::get('/show', [App\Http\Controllers\BalanceItemsController::class, 'show']);
 Route::post('/submit', [App\Http\Controllers\BalanceItemsController::class, 'store']);
-Route::post('/update', [App\Http\Controllers\BalanceItemsController::class, 'update']);
+Route::put('/update', [App\Http\Controllers\BalanceItemsController::class, 'update']);
 Route::post('/delete', [App\Http\Controllers\BalanceItemsController::class, 'delete']);
+
+Route::post('/import', [App\Http\Controllers\BalanceItemsController::class, 'import']);
+
