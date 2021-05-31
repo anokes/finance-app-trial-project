@@ -40,4 +40,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    //create relationship for balance items
+    public function balanceitems(){
+        return $this->hasMany(BalanceItem::class);
+   }
 }

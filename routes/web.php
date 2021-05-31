@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,16 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
+
+Auth::routes();
+
+Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+
+//routes for CRUD and import functionality
+Route::get('/show', [App\Http\Controllers\BalanceItemsController::class, 'show']);
+Route::post('/submit', [App\Http\Controllers\BalanceItemsController::class, 'store']);
+Route::put('/update', [App\Http\Controllers\BalanceItemsController::class, 'update']);
+Route::post('/delete', [App\Http\Controllers\BalanceItemsController::class, 'delete']);
+
+Route::post('/import', [App\Http\Controllers\BalanceItemsController::class, 'import']);
+
